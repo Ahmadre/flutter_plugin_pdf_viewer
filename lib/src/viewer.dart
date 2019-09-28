@@ -6,6 +6,7 @@ import 'tooltip.dart';
 enum IndicatorPosition { topLeft, topRight, bottomLeft, bottomRight }
 
 class PDFViewer extends StatefulWidget {
+  final double initialRotation;
   final PDFDocument document;
   final Color indicatorText;
   final Color indicatorBackground;
@@ -17,6 +18,7 @@ class PDFViewer extends StatefulWidget {
 
   PDFViewer(
       {Key key,
+      this.initialRotation,
       @required this.document,
       this.indicatorText = Colors.white,
       this.indicatorBackground = Colors.black54,
@@ -60,10 +62,10 @@ class _PDFViewerState extends State<PDFViewer> {
   _loadPage() async {
     setState(() => _isLoading = true);
     if (_oldPage == 0) {
-      _page = await widget.document.get(page: _pageNumber);
+      _page = await widget.document.get(page: _pageNumber, rotation: widget.initialRotation);
     } else if (_oldPage != _pageNumber) {
       _oldPage = _pageNumber;
-      _page = await widget.document.get(page: _pageNumber);
+      _page = await widget.document.get(page: _pageNumber, rotation: widget.initialRotation);
     }
     if(this.mounted) {
       setState(() => _isLoading = false);

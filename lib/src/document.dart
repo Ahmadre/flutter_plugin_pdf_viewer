@@ -11,6 +11,10 @@ class PDFDocument {
   static const MethodChannel _channel =
       const MethodChannel('flutter_plugin_pdf_viewer');
 
+  final double rotation;
+  
+  PDFDocument({this.rotation}) : super();
+
   String _filePath;
   int count;
 
@@ -78,11 +82,11 @@ class PDFDocument {
   /// Load specific page
   ///
   /// [page] defaults to `1` and must be equal or above it
-  Future<PDFPage> get({int page = 1}) async {
+  Future<PDFPage> get({int page = 1, double rotation = 0.0}) async {
     assert(page > 0);
     var data = await _channel
         .invokeMethod('getPage', {'filePath': _filePath, 'pageNumber': page});
-    return new PDFPage(data, page);
+    return new PDFPage(data, rotation, page);
   }
 
   // Stream all pages
@@ -91,7 +95,7 @@ class PDFDocument {
       print(i);
       final data = await _channel
           .invokeMethod('getPage', {'filePath': _filePath, 'pageNumber': i});
-      return new PDFPage(data, 1);
+      return new PDFPage(data, rotation ?? 0.0, 1,);
     }).asStream();
   }
 }
