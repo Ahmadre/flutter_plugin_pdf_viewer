@@ -6,6 +6,11 @@ import 'tooltip.dart';
 enum IndicatorPosition { topLeft, topRight, bottomLeft, bottomRight }
 
 class PDFViewer extends StatefulWidget {
+  final Color pickerIconColor;
+  final int zoomSteps;
+  final double minScale;
+  final double panLimit;
+  final double maxScale;
   final double initialRotation;
   final PDFDocument document;
   final Color indicatorText;
@@ -18,7 +23,12 @@ class PDFViewer extends StatefulWidget {
 
   PDFViewer(
       {Key key,
-      this.initialRotation,
+      this.pickerIconColor = Colors.black,
+      this.zoomSteps = 3,
+      this.minScale = 1.0,
+      this.panLimit = 0.8,
+      this.maxScale = 3.0,
+      this.initialRotation = 0.0,
       @required this.document,
       this.indicatorText = Colors.white,
       this.indicatorBackground = Colors.black54,
@@ -62,12 +72,24 @@ class _PDFViewerState extends State<PDFViewer> {
   _loadPage() async {
     setState(() => _isLoading = true);
     if (_oldPage == 0) {
-      _page = await widget.document.get(page: _pageNumber, rotation: widget.initialRotation);
+      _page = await widget.document.get(
+          page: _pageNumber,
+          rotation: widget.initialRotation,
+          zoomSteps: widget.zoomSteps,
+          minScale: widget.minScale,
+          panLimit: widget.panLimit,
+          maxScale: widget.maxScale);
     } else if (_oldPage != _pageNumber) {
       _oldPage = _pageNumber;
-      _page = await widget.document.get(page: _pageNumber, rotation: widget.initialRotation);
+      _page = await widget.document.get(
+          page: _pageNumber,
+          rotation: widget.initialRotation,
+          zoomSteps: widget.zoomSteps,
+          minScale: widget.minScale,
+          panLimit: widget.panLimit,
+          maxScale: widget.maxScale);
     }
-    if(this.mounted) {
+    if (this.mounted) {
       setState(() => _isLoading = false);
     }
   }
@@ -135,7 +157,7 @@ class _PDFViewerState extends State<PDFViewer> {
           ? FloatingActionButton(
               elevation: 4.0,
               tooltip: widget.tooltip.jump,
-              child: Icon(Icons.view_carousel),
+              child: Icon(Icons.view_carousel, color: widget.pickerIconColor),
               onPressed: () {
                 _pickPage();
               },
